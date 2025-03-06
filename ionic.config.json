@@ -1,0 +1,7 @@
+{
+  "name": "electron-update-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
