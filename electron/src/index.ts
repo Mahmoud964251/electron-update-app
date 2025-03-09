@@ -53,28 +53,44 @@ if (electronIsDev) {
   await myCapacitorApp.init(); // Initialize our app, build windows, and load content.
 
 
-  autoUpdater.autoDownload = false
-  autoUpdater.autoInstallOnAppQuit = true
 
-  autoUpdater.checkForUpdates(); // Check for updates if we are in a packaged app.
+  setTimeout( _=> {
 
 
-  autoUpdater.on('update-available', (info:UpdateInfo) => {
-    showMsg('update available')
-    autoUpdater.downloadUpdate()
-  })
+    autoUpdater.autoDownload = false
+    autoUpdater.autoInstallOnAppQuit = true
 
-  autoUpdater.on('update-not-available', (info:UpdateInfo) => {
-    showMsg('update not available')
-  })
+    autoUpdater.checkForUpdates(); // Check for updates if we are in a packaged app.
 
-  autoUpdater.on('update-downloaded', (info:UpdateInfo) => {
-    showMsg('update downloaded successfully')
-  })
 
-  autoUpdater.on('error', (info) => {
-    showMsg('autoUpdater error')
-  })
+    autoUpdater.on('update-available', async (info:UpdateInfo) => {
+
+      const dialoge = await showMsg(`Update available: ${info.version}. Do you want to download it?`, ['Yes', 'No']);
+
+      if (dialoge == 0) return autoUpdater.downloadUpdate();
+
+      showMsg('Update skipped');
+
+    })
+
+    autoUpdater.on('update-not-available', (info:UpdateInfo) => {
+      showMsg('update not available')
+    })
+
+    autoUpdater.on('update-downloaded', async (info:UpdateInfo) => {
+
+      const dialoge = await showMsg('Update downloaded successfully. Restart to apply?', ['Restart Now', 'Later']);
+
+      if (dialoge == 0) autoUpdater.quitAndInstall();
+
+    })
+
+    autoUpdater.on('error', (info) => {
+      showMsg('autoUpdater error')
+    })
+
+
+  }, 4000)
 
 
 
@@ -85,13 +101,15 @@ if (electronIsDev) {
 
 let mainWindow: BrowserWindow;
 
-const showMsg = (message) => {
-  setTimeout(_=> {
-    dialog.showMessageBox(mainWindow, {
-      message,
-    });
-  }, 4000)
-}
+const showMsg = async (message: string, buttons: string[] = ['OK']): Promise<number> => {
+  const result = await dialog.showMessageBox(mainWindow, { message, buttons });
+  return result.response; // Return the index of the button clicked
+};
+
+
+
+
+
 
 
 
