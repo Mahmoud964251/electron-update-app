@@ -58,12 +58,10 @@ if (electronIsDev) {
 
   autoUpdater.checkForUpdates(); // Check for updates if we are in a packaged app.
 
-  showMsg(app.getVersion())
 
   autoUpdater.on('update-available', (info:UpdateInfo) => {
     showMsg('update available')
-    const path = autoUpdater.downloadUpdate()
-    showMsg(path)
+    autoUpdater.downloadUpdate()
   })
 
   autoUpdater.on('update-not-available', (info:UpdateInfo) => {
@@ -81,8 +79,6 @@ if (electronIsDev) {
 
 
 
-
-
 })();
 
 
@@ -94,7 +90,7 @@ const showMsg = (message) => {
     dialog.showMessageBox(mainWindow, {
       message,
     });
-  }, 1000)
+  }, 4000)
 }
 
 
